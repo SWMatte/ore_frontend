@@ -1,0 +1,15 @@
+.form-container {
+    display: flex;
+    flex-direction: row; /* Disposizione orizzontale */
+  }
+  
+  .calendar-container {
+    flex: 1; /* Il calendario si espande per occupare tutto lo spazio disponibile */
+    padding-right: 10px; /* Spazio tra il calendario e l'altra colonna */
+  }
+  
+  .data-container {
+    flex: 1; /* L'altra colonna si espande per occupare tutto lo spazio disponibile */
+    padding-left: 10px; /* Spazio tra l'altra colonna e il calendario */
+  }
+  

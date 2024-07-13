@@ -1,0 +1,12 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Altezza del 100% della viewport (opzionale, per centrare verticalmente) */
+  }
+  
+  .button-container {
+    margin-top: 20px; /* Margine superiore per separare il contenuto dal pulsante */
+  }
+  

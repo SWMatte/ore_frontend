@@ -1,0 +1,16 @@
+.example-container {
+    width: auto;
+    height: 100%;
+    margin-top: 5%;
+    display: grid;
+   }
+  
+  .drawer {
+     margin-left: 50px;
+  }
+  .main-content {
+    grid-column: 2 / 3; /* Occupa la seconda colonna */
+   }
+  .lorrin{
+   font-size: 40px;
+}

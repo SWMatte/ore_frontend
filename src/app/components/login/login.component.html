@@ -1,0 +1,20 @@
+<div class="container">
+    <mat-form-field appearance="fill">
+      <mat-label>Inserisci nome</mat-label>
+      <input matInput placeholder="Placeholder" #inputNome>
+      <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+    </mat-form-field>
+  
+    <mat-form-field appearance="fill">
+      <mat-label>Inserisci cognome</mat-label>
+      <input matInput placeholder="Placeholder" #inputCognome>
+      <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+    </mat-form-field>
+  
+    <div class="button-container">
+      <button mat-raised-button (click)="salvaDati(inputNome.value, inputCognome.value)">Salva</button>
+    </div>
+  </div>
+  
+
+ <router-outlet></router-outlet>
