@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { User } from '../classes/User';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +18,8 @@ export class LoginService {
     queryParams = queryParams.append("name", name);
     queryParams = queryParams.append("lastName", lastName);
 
-    return this.http.get<User>(this.url + 'getUser', { params: queryParams });
+    return this.http.get<any>(this.url + 'getLogin', { params: queryParams })
+    .pipe(map(respone => respone.body as User))
   }
 
 }

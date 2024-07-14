@@ -1,11 +1,11 @@
 export class Company {
-    idCompany!: number;
+    idCompany!: string;
   nameCompany!: string;
   placeCompany!: string;
 
 
 
-  constructor(idCompany: number , nameCompany : string , placeCompany : string) {
+  constructor(idCompany: string , nameCompany : string , placeCompany : string) {
 
     this.idCompany = idCompany;
     if (nameCompany) {

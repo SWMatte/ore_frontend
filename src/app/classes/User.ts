@@ -1,12 +1,15 @@
+import { Company } from "./Company";
+
 export class User {
-  idUser!: number;
+  idUser!: string;
   name!: string;
   lastName!: string;
+  company?: Company;
 
    
 
 
-  constructor(idUser: number , name : string , lastName : string) {
+  constructor(idUser: string , name : string , lastName : string, company : Company) {
 
     this.idUser = idUser;
     if (name) {
@@ -14,6 +17,9 @@ export class User {
     }
     if (lastName) {
       this.lastName = lastName;
+    }
+    if (company) {
+      this.company = company;
     }
   }
 

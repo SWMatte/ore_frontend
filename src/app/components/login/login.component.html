@@ -1,3 +1,5 @@
+
+ 
 <div class="container">
     <mat-form-field appearance="fill">
       <mat-label>Inserisci nome</mat-label>
@@ -14,7 +16,9 @@
     <div class="button-container">
       <button mat-raised-button (click)="salvaDati(inputNome.value, inputCognome.value)">Salva</button>
     </div>
+    <mat-spinner *ngIf="isLoading"></mat-spinner>
   </div>
   
+
 
  <router-outlet></router-outlet>

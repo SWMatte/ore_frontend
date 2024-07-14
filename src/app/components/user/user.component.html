@@ -1,13 +1,16 @@
 <app-navigation-menu></app-navigation-menu>
 
 <mat-drawer-container class="example-container">
-    <mat-drawer-content class="drawer">
-         USER
-         <p > Welcome :  {{this.name}}  {{this.lastName}}</p>
-         
-    </mat-drawer-content>
+  <mat-drawer-content class="drawer">
+    <h3>User</h3>
+     <h2>Welcome</h2> 
+    <ul>
+      <li>Nome: {{ this.name }}</li>
+      <li>Cognome: {{ this.lastName }}</li>
+    </ul>
+  </mat-drawer-content>
   <mat-drawer-content class="main-content">
-        COMPANY
-     <app-company></app-company>
+    <h3>Company</h3>
+    <app-company></app-company>
   </mat-drawer-content>
 </mat-drawer-container>

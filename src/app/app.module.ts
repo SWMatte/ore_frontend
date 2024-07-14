@@ -21,7 +21,8 @@ import { LoginComponent } from './components/login/login.component';
 import { NavigationMenuComponent } from './components/navigation-menu/navigation-menu.component';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatSidenavModule} from '@angular/material/sidenav';
-
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+ 
 
  @NgModule({
   declarations: [AppComponent, HomeComponent, FormComponent, CalendarComponent,CompanyComponent,UserComponent,LoginComponent, NavigationMenuComponent ],
@@ -38,7 +39,8 @@ import {MatSidenavModule} from '@angular/material/sidenav';
     MatNativeDateModule,
     BrowserAnimationsModule,
     MatGridListModule,
-    MatSidenavModule
+    MatSidenavModule,
+    MatProgressSpinnerModule
   ],
   providers: [
     { provide: NativeDateAdapter, useClass: NativeDateAdapter }, //per far funzionare il calendar
