@@ -1,47 +1,87 @@
-import { Component, OnInit,ChangeDetectionStrategy, OnChanges, SimpleChanges} from '@angular/core';
- import { Observable } from 'rxjs';
- import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Observable } from 'rxjs';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { ApiService } from 'src/app/service/apiCalendar.service';
 import { DayMonth } from 'src/app/classes/DayMonth';
- /*
- QUESTO COMPONENTE VIENE RICHIAMATO NEL FORM QUA ANDRO' AD IMPOSTARE I VALORI CHE COMPILANO LA TABELLA CON GIORNO-ORE E VEDOCHE ALTRO
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+
+/*
+ * QUESTO COMPONENTE VIENE RICHIAMATO NEL FORM.
+ * QUI ANDRO' AD IMPOSTARE I VALORI CHE COMPILANO LA TABELLA CON GIORNO, ORE E ALTRO.
  */
-  @Component({
+@Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.css'],
   providers: [],
-  changeDetection: ChangeDetectionStrategy.OnPush
- })
-export class CalendarComponent implements OnChanges{
-  
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class CalendarComponent implements OnInit {
   daysOfMonth$!: Observable<DayMonth[]>;
   selectedDate: Date | null;
+  homeform!: FormGroup;
+  hours: number[] = [1, 2, 3, 4, 5, 6, 7, 8];
 
-constructor(private apiService:ApiService,){
-  this.selectedDate = null;
-}
-
-   ngOnChanges(changes: SimpleChanges): void {  // tengo traccia dei cambiamenti dell'oservable ogni volta che cambia la data selezionata
-       changes["daysOfMonth$"]
-    }
-  
-
-  getCalendar(month : string , year : string){ // richiamo il back end con il calendario che voglio ottenere
-   this.daysOfMonth$ = this.apiService.getCalendar(month, year);
+  constructor(private apiService: ApiService) {
+    this.selectedDate = null;
   }
 
-  
-  dateSelected(event: MatDatepickerInputEvent<Date>) { // metodo evento che recupera la data e anno selezionato dall html
+  ngOnInit(): void {
+    // Inizializzo il FormGroup con un FormArray vuoto per i giorni del mese
+    this.homeform = new FormGroup({
+      days: new FormArray([]),
+    });
+  }
+
+  getCalendar(month: string, year: string) {
+    // Richiamo il backend per ottenere il calendario del mese e dell'anno specificato
+    this.daysOfMonth$ = this.apiService.getCalendar(month, year);
+
+    // Sottoscrivo all'osservabile e passo i dati dei giorni al metodo per impostare il FormArray
+    this.daysOfMonth$.subscribe((days) => {
+      this.setDaysFormArray(days);
+    });
+  }
+
+  setDaysFormArray(days: DayMonth[]) {
+    // Recupero il FormArray 'days' dal FormGroup
+    const daysFormArray = this.homeform.get('days') as FormArray;
+    // Pulisco il FormArray per rimuovere eventuali dati precedenti
+    daysFormArray.clear();
+    // Itero sui giorni ottenuti dall'osservabile e aggiungo un nuovo FormGroup per ciascun giorno
+    days.forEach(day => {
+      // Verifico se il giorno è sabato o domenica e imposto il valore di default a 0
+      const isWeekend = (day.day.toLowerCase() === 'sabato' || day.day.toLowerCase() === 'domenica');
+      daysFormArray.push(new FormGroup({
+        day: new FormControl({ value: day.day, disabled: true }), // Campo giorno non modificabile
+        number: new FormControl({ value: day.number, disabled: true }), // Campo numero non modificabile
+        hoursWorked: new FormControl(isWeekend ? 0 : null), // Campo ore lavorate, 0 per sabato e domenica
+        note: new FormControl(null) // Campo note
+      }));
+    });
+  }
+
+  dateSelected(event: MatDatepickerInputEvent<Date>) {
+    // Metodo evento che recupera la data e l'anno selezionati dall'HTML
     this.selectedDate = event.value;
 
     if (this.selectedDate) {
-      const month: number = this.selectedDate.getMonth()+1;
+      // Recupero mese e anno dalla data selezionata
+      const month: number = this.selectedDate.getMonth() + 1;
       const year: number = this.selectedDate.getFullYear();
+      // Richiamo il metodo per ottenere il calendario per il mese e anno selezionati
       this.getCalendar(month.toString(), year.toString());
     }
-  
   }
 
-
+  onSubmit() {
+    if (this.homeform.valid) {
+      // Recupero il FormArray 'days' dal FormGroup
+      const daysFormArray = this.homeform.get('days') as FormArray;
+      // Utilizzo getRawValue() per ottenere tutti i dati del form, inclusi i campi disabilitati
+      const formData = daysFormArray.getRawValue();
+      console.log(formData);
+      // Processa i dati del form come necessario
+    }
+  }
 }
