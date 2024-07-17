@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, OnChanges, SimpleChanges } from '@angular/core';
 import { Observable } from 'rxjs';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { ApiService } from 'src/app/service/apiCalendar.service';
@@ -16,20 +16,33 @@ import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CalendarComponent implements OnInit {
+export class CalendarComponent implements OnInit  {
   daysOfMonth$!: Observable<DayMonth[]>;
   selectedDate: Date | null;
   homeform!: FormGroup;
-  hours: number[] = [1, 2, 3, 4, 5, 6, 7, 8];
+  hours: number[] = [1, 2, 3, 4, 5, 6, 7, 8]; 
+  places: string[] = ['SEDE','SMART_WORKING','SEDE_CLIENTE'];
+  totalHoursWorked: number = 0;
+  totalIllnessHours: number = 0;
+  totalHoliday: number = 0;
+  totalDayOff: number = 0;
+  totalMonthHour: number=0;
 
   constructor(private apiService: ApiService) {
     this.selectedDate = null;
   }
 
+ 
+
   ngOnInit(): void {
     // Inizializzo il FormGroup con un FormArray vuoto per i giorni del mese
     this.homeform = new FormGroup({
       days: new FormArray([]),
+    });
+
+    // Sottoscrivo agli eventi di cambiamento del valore del form
+    this.homeform.valueChanges.subscribe(() => {
+      this.calculateTotals();
     });
   }
 
@@ -56,9 +69,15 @@ export class CalendarComponent implements OnInit {
         day: new FormControl({ value: day.day, disabled: true }), // Campo giorno non modificabile
         number: new FormControl({ value: day.number, disabled: true }), // Campo numero non modificabile
         hoursWorked: new FormControl(isWeekend ? 0 : null), // Campo ore lavorate, 0 per sabato e domenica
+        places: new FormControl(),
+        illnessHours: new FormControl(0),   
+        holiday: new FormControl(0),
+        dayOff: new FormControl(0),
         note: new FormControl(null) // Campo note
       }));
     });
+
+    this.calculateTotals();
   }
 
   dateSelected(event: MatDatepickerInputEvent<Date>) {
@@ -73,6 +92,28 @@ export class CalendarComponent implements OnInit {
       this.getCalendar(month.toString(), year.toString());
     }
   }
+
+  calculateTotals() {
+    // Reset dei totali
+    this.totalHoursWorked = 0;
+    this.totalIllnessHours = 0;
+    this.totalHoliday = 0;
+    this.totalDayOff = 0;
+  
+    // Recupero il FormArray 'days' dal FormGroup
+    const daysFormArray = this.homeform.get('days') as FormArray;
+  
+    // Itero sui controlli del form per sommare i valori
+    daysFormArray.controls.forEach((control) => {
+      const group = control as FormGroup;
+      this.totalHoursWorked += group.get('hoursWorked')?.value || 0;
+      this.totalIllnessHours += group.get('illnessHours')?.value || 0;
+      this.totalHoliday += group.get('holiday')?.value || 0;
+      this.totalDayOff += group.get('dayOff')?.value || 0;
+    });
+    this.totalMonthHour= this.totalHoursWorked+this.totalIllnessHours+this.totalHoliday+ this.totalDayOff
+  }
+  
 
   onSubmit() {
     if (this.homeform.valid) {

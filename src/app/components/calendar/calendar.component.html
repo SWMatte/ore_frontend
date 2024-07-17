@@ -29,11 +29,49 @@
         </mat-form-field>
 
         <mat-form-field appearance="fill">
+          <mat-label>Luogo di lavoro</mat-label>
+          <mat-select formControlName="places">
+            <mat-option value=""  disabled selected>Seleziona luogo di lavoro</mat-option>
+            <mat-option *ngFor="let place of places" [value]="place">{{place}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Ore malattia</mat-label>
+          <mat-select formControlName="illnessHours">
+            <mat-option value="" disabled selected>Seleziona ore</mat-option>
+            <mat-option *ngFor="let hour of hours" [value]="hour">{{hour}} </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Ore di permesso</mat-label>
+          <mat-select formControlName="dayOff">
+            <mat-option value="" disabled selected>Seleziona ore</mat-option>
+            <mat-option *ngFor="let hour of hours" [value]="hour">{{hour}} </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Ore di vacanza</mat-label>
+          <mat-select formControlName="holiday">
+            <mat-option value="" disabled selected>Seleziona ore</mat-option>
+            <mat-option *ngFor="let hour of hours" [value]="hour">{{hour}} </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
           <mat-label>Note</mat-label>
           <input matInput type="text" formControlName="note" />
         </mat-form-field>
       </div>
     </div>
     <button type="submit" mat-raised-button>Conferma</button>
+    <button type="reset" mat-raised-button>Reset</button>
+    <span>Totale ore lavorate {{totalHoursWorked }}</span>   <span>Totale ore malattia: {{totalIllnessHours }}</span>    <span>Totale ore vacanza: {{totalHoliday }}</span>   <span>Totale ore permesso: {{totalDayOff }}</span> 
+    <div> Ore totali mensili: {{totalMonthHour==0? 0 : totalMonthHour }}</div>
+ 
   </form>
+
+ 
 </ng-container>
