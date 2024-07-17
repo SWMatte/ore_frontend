@@ -1,6 +1,10 @@
 <mat-form-field>
   <mat-label>Scegli il mese da registrare </mat-label>
-  <input matInput [matDatepicker]="picker" (dateChange)="dateSelected($event)" />
+  <input
+    matInput
+    [matDatepicker]="picker"
+    (dateChange)="dateSelected($event)"
+  />
   <mat-hint>MM/YYYY</mat-hint>
   <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
   <mat-datepicker #picker></mat-datepicker>
@@ -12,27 +16,33 @@
       <div *ngFor="let day of daysOfMonth; let i = index" [formGroupName]="i">
         <mat-form-field appearance="fill">
           <mat-label>Giorno</mat-label>
-          <input matInput type="text" formControlName="day"  />
+          <input matInput type="text" formControlName="day" />
         </mat-form-field>
 
         <mat-form-field appearance="fill">
           <mat-label>Numero</mat-label>
-          <input matInput type="text" formControlName="number"  />
+          <input matInput type="text" formControlName="number" />
         </mat-form-field>
 
         <mat-form-field appearance="fill">
           <mat-label>Ore</mat-label>
           <mat-select formControlName="hoursWorked">
             <mat-option value="" disabled selected>Seleziona ore</mat-option>
-            <mat-option *ngFor="let hour of hours" [value]="hour">{{hour}} ore</mat-option>
+            <mat-option *ngFor="let hour of hours" [value]="hour"
+              >{{ hour }} ore</mat-option
+            >
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="fill">
           <mat-label>Luogo di lavoro</mat-label>
           <mat-select formControlName="places">
-            <mat-option value=""  disabled selected>Seleziona luogo di lavoro</mat-option>
-            <mat-option *ngFor="let place of places" [value]="place">{{place}}</mat-option>
+            <mat-option value="" disabled selected
+              >Seleziona luogo di lavoro</mat-option
+            >
+            <mat-option *ngFor="let place of places" [value]="place">{{
+              place
+            }}</mat-option>
           </mat-select>
         </mat-form-field>
 
@@ -40,7 +50,9 @@
           <mat-label>Ore malattia</mat-label>
           <mat-select formControlName="illnessHours">
             <mat-option value="" disabled selected>Seleziona ore</mat-option>
-            <mat-option *ngFor="let hour of hours" [value]="hour">{{hour}} </mat-option>
+            <mat-option *ngFor="let hour of hours" [value]="hour"
+              >{{ hour }}
+            </mat-option>
           </mat-select>
         </mat-form-field>
 
@@ -48,7 +60,9 @@
           <mat-label>Ore di permesso</mat-label>
           <mat-select formControlName="dayOff">
             <mat-option value="" disabled selected>Seleziona ore</mat-option>
-            <mat-option *ngFor="let hour of hours" [value]="hour">{{hour}} </mat-option>
+            <mat-option *ngFor="let hour of hours" [value]="hour"
+              >{{ hour }}
+            </mat-option>
           </mat-select>
         </mat-form-field>
 
@@ -56,7 +70,9 @@
           <mat-label>Ore di vacanza</mat-label>
           <mat-select formControlName="holiday">
             <mat-option value="" disabled selected>Seleziona ore</mat-option>
-            <mat-option *ngFor="let hour of hours" [value]="hour">{{hour}} </mat-option>
+            <mat-option *ngFor="let hour of hours" [value]="hour"
+              >{{ hour }}
+            </mat-option>
           </mat-select>
         </mat-form-field>
 
@@ -68,10 +84,14 @@
     </div>
     <button type="submit" mat-raised-button>Conferma</button>
     <button type="reset" mat-raised-button>Reset</button>
-    <span>Totale ore lavorate {{totalHoursWorked }}</span>   <span>Totale ore malattia: {{totalIllnessHours }}</span>    <span>Totale ore vacanza: {{totalHoliday }}</span>   <span>Totale ore permesso: {{totalDayOff }}</span> 
-    <div> Ore totali mensili: {{totalMonthHour==0? 0 : totalMonthHour }}</div>
- 
+    <div *ngIf="viewTotal">
+      <span>Totale ore lavorate {{ totalHoursWorked }}</span>
+      <span>Totale ore malattia: {{ totalIllnessHours }}</span>
+      <span>Totale ore vacanza: {{ totalHoliday }}</span>
+      <span>Totale ore permesso: {{ totalDayOff }}</span>
+      <div>
+        Ore totali mensili: {{ totalMonthHour == 0 ? 0 : totalMonthHour }}
+      </div>
+    </div>
   </form>
-
- 
 </ng-container>
