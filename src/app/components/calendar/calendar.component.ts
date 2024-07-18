@@ -1,9 +1,19 @@
-import { Component, OnInit, ChangeDetectionStrategy, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { Observable } from 'rxjs';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { ApiService } from 'src/app/service/apiCalendar.service';
 import { DayMonth } from 'src/app/classes/DayMonth';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { HourWorkedDTO } from 'src/app/classes/HourWorkedDTO';
+import { User } from 'src/app/classes/User';
+import { Company } from 'src/app/classes/Company';
+import { DayWorkedDTO } from 'src/app/classes/DayWorkedDTO';
 
 /*
  * QUESTO COMPONENTE VIENE RICHIAMATO NEL FORM.
@@ -16,26 +26,22 @@ import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CalendarComponent implements OnInit  {
+export class CalendarComponent implements OnInit {
   daysOfMonth$!: Observable<DayMonth[]>;
   selectedDate: Date | null;
   homeform!: FormGroup;
-  hours: number[] = [0,1, 2, 3, 4, 5, 6, 7, 8]; 
-  places: string[] = ['SEDE','SMART_WORKING','SEDE_CLIENTE'];
+  hours: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  places: string[] = ['SEDE', 'SMART_WORKING', 'SEDE_CLIENTE'];
   totalHoursWorked: number = 0;
   totalIllnessHours: number = 0;
   totalHoliday: number = 0;
   totalDayOff: number = 0;
-  totalMonthHour: number=0;
-  viewTotal : boolean = false;
+  totalMonthHour: number = 0;
+  viewTotal: boolean = false;
 
   constructor(private apiService: ApiService) {
     this.selectedDate = null;
   }
-
-
- 
- 
 
   ngOnInit(): void {
     // Inizializzo il FormGroup con un FormArray vuoto per i giorni del mese
@@ -47,9 +53,6 @@ export class CalendarComponent implements OnInit  {
     this.homeform.valueChanges.subscribe(() => {
       this.calculateTotals();
     });
-
-
-     
   }
 
   getCalendar(month: string, year: string) {
@@ -68,19 +71,23 @@ export class CalendarComponent implements OnInit  {
     // Pulisco il FormArray per rimuovere eventuali dati precedenti
     daysFormArray.clear();
     // Itero sui giorni ottenuti dall'osservabile e aggiungo un nuovo FormGroup per ciascun giorno
-    days.forEach(day => {
+    days.forEach((day) => {
       // Verifico se il giorno è sabato o domenica e imposto il valore di default a 0
-      const isWeekend = (day.day.toLowerCase() === 'sabato' || day.day.toLowerCase() === 'domenica');
-      daysFormArray.push(new FormGroup({
-        day: new FormControl({ value: day.day, disabled: true }), // Campo giorno non modificabile
-        number: new FormControl({ value: day.number, disabled: true }), // Campo numero non modificabile
-        hoursWorked: new FormControl(isWeekend ? 0 : null), // Campo ore lavorate, 0 per sabato e domenica
-        places: new FormControl(),
-        illnessHours: new FormControl(0),   
-        holiday: new FormControl(0),
-        dayOff: new FormControl(0),
-        note: new FormControl(null) // Campo note
-      }));
+      const isWeekend =
+        day.day.toLowerCase() === 'sabato' ||
+        day.day.toLowerCase() === 'domenica';
+      daysFormArray.push(
+        new FormGroup({
+          day: new FormControl({ value: day.day, disabled: true }), // Campo giorno non modificabile
+          number: new FormControl({ value: day.number, disabled: true }), // Campo numero non modificabile
+          hoursWorked: new FormControl(isWeekend ? 0 : null), // Campo ore lavorate, 0 per sabato e domenica
+          places: new FormControl(this.places[0]),
+          illnessHours: new FormControl(0),
+          holiday: new FormControl(0),
+          dayOff: new FormControl(0),
+          note: new FormControl(null), // Campo note
+        })
+      );
     });
 
     this.calculateTotals(); // richiamo il metodo che mi fa la somma delle ore
@@ -105,10 +112,10 @@ export class CalendarComponent implements OnInit  {
     this.totalIllnessHours = 0;
     this.totalHoliday = 0;
     this.totalDayOff = 0;
-  
+
     // Recupero il FormArray 'days' dal FormGroup dichiarato in cima
     const daysFormArray = this.homeform.get('days') as FormArray;
-  
+
     // Itero sui controlli del form per sommare i valori
     daysFormArray.controls.forEach((control) => {
       const group = control as FormGroup; //dall'array estraggo il formgroup che contiene i controlli
@@ -117,19 +124,70 @@ export class CalendarComponent implements OnInit  {
       this.totalHoliday += group.get('holiday')?.value || 0;
       this.totalDayOff += group.get('dayOff')?.value || 0;
     });
-    this.totalMonthHour= this.totalHoursWorked+this.totalIllnessHours+this.totalHoliday+ this.totalDayOff
+    this.totalMonthHour =
+      this.totalHoursWorked +
+      this.totalIllnessHours +
+      this.totalHoliday +
+      this.totalDayOff;
     this.viewTotal = this.totalMonthHour > 0; // Imposta viewTotal a true se ci sono ore totali maggiori di zero
-
   }
-  
+
+  // questo metodo permette di ottenere il dto che accetta il backend
+  splitDate(dateString: string): {
+    dayNumber: string;
+    month: string;
+    year: string;
+  } {
+    const [dayNumber, month, year] = dateString.split('-');
+    return { dayNumber, month, year };
+  }
 
   onSubmit() {
     if (this.homeform.valid) {
       // Recupero il FormArray 'days' dal FormGroup
       const daysFormArray = this.homeform.get('days') as FormArray;
-      // Utilizzo getRawValue() per ottenere tutti i dati del form, inclusi i campi disabilitati
-      const formData = daysFormArray.getRawValue();
-      console.log(formData);
-     }
+
+      // Array per contenere gli oggetti HourWorkedDTO
+      const hourWorkedDTOArray: HourWorkedDTO[] = [];
+
+      // Popola l'array con i dati dal form
+      daysFormArray.controls.forEach((control) => {
+        const group = control as FormGroup;
+
+        const dateParts = this.splitDate(group.get('number')?.value || '');
+        const dto = new HourWorkedDTO(
+          dateParts.month,
+          group.get('day')?.value || '',
+          dateParts.dayNumber,
+          dateParts.year,
+          group.get('hoursWorked')?.value || 0,
+          group.get('note')?.value || '',
+          group.get('places')?.value || '',
+          group.get('illnessHours')?.value || 0,
+          group.get('holiday')?.value || 0,
+          group.get('dayOff')?.value || 0
+        );
+        hourWorkedDTOArray.push(dto);
+      });
+
+ 
+      // Costruisci la classe DayWorkedDTO e inviala al backend
+      this.buildHoursClass(hourWorkedDTOArray);
+    }
+  }
+
+
+  // costruisco la classe da mandare al backend affianco della session storage è indicato || nel caso siano nulli i parametri
+    buildHoursClass(hourWorkedDTOArray: HourWorkedDTO[]) {
+    const company = new Company(
+      sessionStorage.getItem('idCompany') || ''
+    );
+    const user = new User(
+      sessionStorage.getItem('idUser')||''
+    );
+
+    const dto: DayWorkedDTO = new DayWorkedDTO(hourWorkedDTOArray, user, company);
+    console.log(dto);
+   
   }
 }

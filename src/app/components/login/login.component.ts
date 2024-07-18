@@ -31,13 +31,13 @@ export class LoginComponent {
       try {
         const data = this.loginService.getUser(name,lastName);
         const user = await lastValueFrom(data);
-        sessionStorage.setItem('name',user.lastName);
-        sessionStorage.setItem('lastName',user.name);
+        sessionStorage.setItem('name',user.lastName||'');
+        sessionStorage.setItem('lastName',user.name||'');
         sessionStorage.setItem('idUser',user.idUser);
    
         if (user.company) {
-          sessionStorage.setItem('nameCompany', user.company.nameCompany);
-          sessionStorage.setItem('placeCompany', user.company.placeCompany);
+          sessionStorage.setItem('nameCompany', user.company.nameCompany||'');
+          sessionStorage.setItem('placeCompany', user.company.placeCompany||'');
           sessionStorage.setItem('idCompany', user.company.idCompany);
         }
         
