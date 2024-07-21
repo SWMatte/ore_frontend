@@ -1,19 +1,19 @@
-import {
-  Component,
-  OnInit,
-  ChangeDetectionStrategy,
-  OnChanges,
-  SimpleChanges,
-} from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { firstValueFrom, Observable } from 'rxjs';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { ApiService } from 'src/app/service/apiCalendar.service';
 import { DayMonth } from 'src/app/classes/DayMonth';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { HourWorkedDTO } from 'src/app/classes/HourWorkedDTO';
 import { User } from 'src/app/classes/User';
 import { Company } from 'src/app/classes/Company';
 import { DayWorkedDTO } from 'src/app/classes/DayWorkedDTO';
+import { HourWorkedService } from 'src/app/service/hour-worked.service';
+import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { ExcelService } from 'src/app/service/excel.service';
+import * as FileSaver from 'file-saver'; // npm install --save-dev @types/file-saver  || npm install file-saver
+import * as saveAs from 'file-saver';
 
 /*
  * QUESTO COMPONENTE VIENE RICHIAMATO NEL FORM.
@@ -38,8 +38,16 @@ export class CalendarComponent implements OnInit {
   totalDayOff: number = 0;
   totalMonthHour: number = 0;
   viewTotal: boolean = false;
+  dataSent: boolean = false;
+  selectedMonth!: number;
 
-  constructor(private apiService: ApiService) {
+  constructor(
+    private apiService: ApiService,
+    private hourWorkedService: HourWorkedService,
+    private messageButton: MatSnackBar,
+    private router: Router,
+    private excel: ExcelService
+  ) {
     this.selectedDate = null;
   }
 
@@ -76,16 +84,17 @@ export class CalendarComponent implements OnInit {
       const isWeekend =
         day.day.toLowerCase() === 'sabato' ||
         day.day.toLowerCase() === 'domenica';
+
       daysFormArray.push(
         new FormGroup({
           day: new FormControl({ value: day.day, disabled: true }), // Campo giorno non modificabile
           number: new FormControl({ value: day.number, disabled: true }), // Campo numero non modificabile
-          hoursWorked: new FormControl(isWeekend ? 0 : null), // Campo ore lavorate, 0 per sabato e domenica
+          hoursWorked: new FormControl(isWeekend ? 0 : null), // campo per il weekend default 0
           places: new FormControl(this.places[0]),
           illnessHours: new FormControl(0),
           holiday: new FormControl(0),
           dayOff: new FormControl(0),
-          note: new FormControl(null), // Campo note
+          note: new FormControl(null),
         })
       );
     });
@@ -100,6 +109,7 @@ export class CalendarComponent implements OnInit {
     if (this.selectedDate) {
       // Recupero mese e anno dalla data selezionata
       const month: number = this.selectedDate.getMonth() + 1;
+      this.selectedMonth = month;
       const year: number = this.selectedDate.getFullYear();
       // Richiamo il metodo per ottenere il calendario per il mese e anno selezionati
       this.getCalendar(month.toString(), year.toString());
@@ -144,6 +154,8 @@ export class CalendarComponent implements OnInit {
 
   onSubmit() {
     if (this.homeform.valid) {
+      // se il form è valido disabilito i campi
+      this.setFormDisabled(true);
       // Recupero il FormArray 'days' dal FormGroup
       const daysFormArray = this.homeform.get('days') as FormArray;
 
@@ -170,24 +182,83 @@ export class CalendarComponent implements OnInit {
         hourWorkedDTOArray.push(dto);
       });
 
- 
       // Costruisci la classe DayWorkedDTO e inviala al backend
       this.buildHoursClass(hourWorkedDTOArray);
     }
   }
 
+  // costruisco la classe da mandare al backend
+  buildHoursClass(hourWorkedDTOArray: HourWorkedDTO[]) {
+    const company = new Company(sessionStorage.getItem('idCompany') || '');
+    const user = new User(sessionStorage.getItem('idUser') || '');
 
-  // costruisco la classe da mandare al backend affianco della session storage è indicato || nel caso siano nulli i parametri
-    buildHoursClass(hourWorkedDTOArray: HourWorkedDTO[]) {
-    const company = new Company(
-      sessionStorage.getItem('idCompany') || ''
-    );
-    const user = new User(
-      sessionStorage.getItem('idUser')||''
+    const dto: DayWorkedDTO = new DayWorkedDTO(
+      hourWorkedDTOArray,
+      user,
+      company
     );
 
-    const dto: DayWorkedDTO = new DayWorkedDTO(hourWorkedDTOArray, user, company);
-    console.log(dto);
-   
+    this.sendData(dto);
+  }
+
+  async sendData(dto: DayWorkedDTO) {
+    try {
+      const response = await firstValueFrom(
+        this.hourWorkedService.sendHoursWorked(dto)
+      );
+
+      if (response.status == 200) {
+        this.dataSent = true;
+
+        if (this.dataSent) {
+          this.openSnackBar('Calendar registrato con successo', 'chiudi');
+        }
+      } else {
+        throw new Error(`Unexpected response status: ${response.status}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  setFormDisabled(disabled: boolean): void {
+    // dopo che invio il form disabilito i campi
+    const daysFormArray = this.homeform.get('days') as FormArray;
+
+    daysFormArray.controls.forEach((control) => {
+      const group = control as FormGroup;
+
+      // per ogni campo verifico com'è lo stato di disable e nel caso attivo o disattivo il singolo valore di input, viene verificato dopo che nel submit il form e' valido
+      group.get('day')?.[disabled ? 'disable' : 'enable']();
+      group.get('number')?.[disabled ? 'disable' : 'enable']();
+      group.get('hoursWorked')?.[disabled ? 'disable' : 'enable']();
+      group.get('places')?.[disabled ? 'disable' : 'enable']();
+      group.get('illnessHours')?.[disabled ? 'disable' : 'enable']();
+      group.get('holiday')?.[disabled ? 'disable' : 'enable']();
+      group.get('dayOff')?.[disabled ? 'disable' : 'enable']();
+      group.get('note')?.[disabled ? 'disable' : 'enable']();
+    });
+  }
+
+  //apri messaggino dopo aver inviato form
+  openSnackBar(message: string, action: string) {
+    this.messageButton.open(message, action, {
+      duration: 3000,
+    });
+  }
+
+  async generaExcel(numero: number) { // questo metodo dopo aver importato le librerie permette di andare a salvare un file in formato xml che è il report preso da db
+    try {
+        const monthString = numero.toString();
+       const data = await firstValueFrom(this.excel.getExcel(monthString))
+       saveAs(data,`export_${monthString}.xlsx`)
+           setTimeout(() => {
+            /* setta un ritardo di 3 se e dopo ti sposta*/
+            this.router.navigate(['/home']);
+          }, 3000);
+
+    } catch (error) {
+      console.log(error)
+    }
   }
 }

@@ -5,3 +5,7 @@ span {
 div {
     margin-left: 50px
 }
+
+.custom-month-label {
+    font-size: small !important;
+ }

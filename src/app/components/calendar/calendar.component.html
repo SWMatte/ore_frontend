@@ -1,5 +1,5 @@
 <mat-form-field>
-  <mat-label>Scegli il mese da registrare </mat-label>
+  <mat-label class="custom-month-label">Scegli il mese da registrare</mat-label>
   <input
     matInput
     [matDatepicker]="picker"
@@ -16,17 +16,17 @@
       <div *ngFor="let day of daysOfMonth; let i = index" [formGroupName]="i">
         <mat-form-field appearance="fill">
           <mat-label>Giorno</mat-label>
-          <input matInput type="text" formControlName="day" />
+          <input matInput type="text" formControlName="day"   />
         </mat-form-field>
 
         <mat-form-field appearance="fill">
           <mat-label>Numero</mat-label>
-          <input matInput type="text" formControlName="number" />
+          <input matInput type="text" formControlName="number"   />
         </mat-form-field>
 
         <mat-form-field appearance="fill">
           <mat-label>Ore</mat-label>
-          <mat-select formControlName="hoursWorked">
+          <mat-select formControlName="hoursWorked"   >
             <mat-option value="" disabled selected>Seleziona ore</mat-option>
             <mat-option *ngFor="let hour of hours" [value]="hour"
               >{{ hour }} ore</mat-option
@@ -36,7 +36,7 @@
 
         <mat-form-field appearance="fill">
           <mat-label>Luogo di lavoro</mat-label>
-          <mat-select formControlName="places">
+          <mat-select formControlName="places"   >
             <mat-option value="" disabled selected
               >Seleziona luogo di lavoro</mat-option
             >
@@ -48,7 +48,7 @@
 
         <mat-form-field appearance="fill">
           <mat-label>Ore malattia</mat-label>
-          <mat-select formControlName="illnessHours">
+          <mat-select formControlName="illnessHours"  >
             <mat-option value="" disabled selected>Seleziona ore</mat-option>
             <mat-option *ngFor="let hour of hours" [value]="hour"
               >{{ hour }}
@@ -58,7 +58,7 @@
 
         <mat-form-field appearance="fill">
           <mat-label>Ore di permesso</mat-label>
-          <mat-select formControlName="dayOff">
+          <mat-select formControlName="dayOff"  >
             <mat-option value="" disabled selected>Seleziona ore</mat-option>
             <mat-option *ngFor="let hour of hours" [value]="hour"
               >{{ hour }}
@@ -68,7 +68,7 @@
 
         <mat-form-field appearance="fill">
           <mat-label>Ore di vacanza</mat-label>
-          <mat-select formControlName="holiday">
+          <mat-select formControlName="holiday"  >
             <mat-option value="" disabled selected>Seleziona ore</mat-option>
             <mat-option *ngFor="let hour of hours" [value]="hour"
               >{{ hour }}
@@ -78,12 +78,13 @@
 
         <mat-form-field appearance="fill">
           <mat-label>Note</mat-label>
-          <input matInput type="text" formControlName="note" />
+          <input matInput type="text" formControlName="note"   />
         </mat-form-field>
       </div>
     </div>
-    <button type="submit" mat-raised-button>Conferma</button>
-    <button type="reset" mat-raised-button>Reset</button>
+    <button type="submit" mat-raised-button [disabled]="!homeform.valid" >Conferma</button>
+
+ 
     <div *ngIf="viewTotal">
       <span>Totale ore lavorate {{ totalHoursWorked }}</span>
       <span>Totale ore malattia: {{ totalIllnessHours }}</span>
@@ -94,4 +95,5 @@
       </div>
     </div>
   </form>
+  <button mat-raised-button (click)="generaExcel(selectedMonth)" [disabled]="!selectedMonth">Genera Excel</button>
 </ng-container>

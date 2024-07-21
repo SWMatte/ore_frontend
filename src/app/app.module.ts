@@ -24,7 +24,8 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import{ ReactiveFormsModule} from'@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
-  
+import { MatSnackBarModule } from '@angular/material/snack-bar';  
+
  @NgModule({
   declarations: [AppComponent, HomeComponent, FormComponent, CalendarComponent,CompanyComponent,UserComponent,LoginComponent, NavigationMenuComponent ],
   imports: [
@@ -43,7 +44,8 @@ import { MatSelectModule } from '@angular/material/select';
     MatSidenavModule,
     MatProgressSpinnerModule,
     ReactiveFormsModule,
-    MatSelectModule
+    MatSelectModule,
+    MatSnackBarModule
   ],
   providers: [
     { provide: NativeDateAdapter, useClass: NativeDateAdapter }, //per far funzionare il calendar
