@@ -12,7 +12,7 @@ This project is the front-end application of - [HourWorked](https://github.com/S
 
 ## How to use this project
 
-1) You need to clone the back-end ( you can find the link below )
+1) You need to clone the back-end ( you can find the link above )
 2) You need MySQL for the tables ( until i'll develop generate user / company you need to use postman to create a user and company)
 3) After you have instance of one user and company you can use front-end application to save your hoursworked and generate the xls file
 
@@ -24,11 +24,11 @@ Actually it works only with one user on the db, because it was projected for own
 
 ## Future implementation
 
-Add token for the login 
-Add iteraction for multiple users 
-Add components for profile users 
+- Add token for the login 
+- Add iteraction for multiple users 
+- Add components for profile users 
 
 
 ## Further help
 
- 
+You can clone this project and use for yourself 
