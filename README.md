@@ -4,24 +4,31 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Run `ng serve`  or `npm start `for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
-## Code scaffolding
+## Info
+This project is the front-end application of - [HourWorked](https://github.com/SWMatte/HourWorked) - where you can build and call the endpoints
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
-## Build
+## How to use this project
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+1) You need to clone the back-end ( you can find the link below )
+2) You need MySQL for the tables ( until i'll develop generate user / company you need to use postman to create a user and company)
+3) After you have instance of one user and company you can use front-end application to save your hoursworked and generate the xls file
 
-## Running unit tests
+# important recommendations
+This is not the last update of this project, but right now it works with some corrections like build manually user and company.
+When you run it in localhost:4200 you'll see a login interface you MUST compile it with the same name of the user you want create the xls file. Otherwise you could meet some issues with the data
+Actually it works only with one user on the db, because it was projected for own interaction ( to switch for multiple users you need to change the queries )
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Running end-to-end tests
+## Future implementation
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+Add token for the login 
+Add iteraction for multiple users 
+Add components for profile users 
+
 
 ## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+ 
