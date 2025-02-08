@@ -8,8 +8,8 @@ export  class HourWorkedDTO {
     place!: string;
     illness!: number;
     holiday!: number;
-    dayOff!: number;
-
+    hoursOff!: number;
+    extraWork!:number;
      
     constructor(
         month: string,
@@ -21,7 +21,8 @@ export  class HourWorkedDTO {
         place: string = '',  
         illness: number = 0,  
         holiday: number = 0,  
-        dayOff: number = 0    
+        hoursOff: number = 0,
+        extraWork:number=0   
       ) {
         this.month = month;
         this.day = day;
@@ -32,6 +33,7 @@ export  class HourWorkedDTO {
         this.place = place;
         this.illness = illness;
         this.holiday = holiday;
-        this.dayOff = dayOff;
+        this.hoursOff = hoursOff;
+        this.extraWork=extraWork;
       }
 }

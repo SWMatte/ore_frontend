@@ -37,6 +37,7 @@ export class CalendarComponent implements OnInit {
   totalHoliday: number = 0;
   totalDayOff: number = 0;
   totalMonthHour: number = 0;
+  totalExtraWork : number =0;
   viewTotal: boolean = false;
   dataSent: boolean = false;
   selectedMonth!: number;
@@ -93,8 +94,11 @@ export class CalendarComponent implements OnInit {
           places: new FormControl(this.places[0]),
           illnessHours: new FormControl(0),
           holiday: new FormControl(0),
-          dayOff: new FormControl(0),
+          hoursOff: new FormControl(0),
           note: new FormControl(null),
+          extraWork: new FormControl(0),
+
+          
         })
       );
     });
@@ -122,6 +126,8 @@ export class CalendarComponent implements OnInit {
     this.totalIllnessHours = 0;
     this.totalHoliday = 0;
     this.totalDayOff = 0;
+    this.totalExtraWork=0;
+
 
     // Recupero il FormArray 'days' dal FormGroup dichiarato in cima
     const daysFormArray = this.homeform.get('days') as FormArray;
@@ -132,14 +138,17 @@ export class CalendarComponent implements OnInit {
       this.totalHoursWorked += group.get('hoursWorked')?.value || 0;
       this.totalIllnessHours += group.get('illnessHours')?.value || 0;
       this.totalHoliday += group.get('holiday')?.value || 0;
-      this.totalDayOff += group.get('dayOff')?.value || 0;
+      this.totalDayOff += group.get('hoursOff')?.value || 0;
+      this.totalExtraWork +=group.get('extraWork')?.value||0;
+
     });
     this.totalMonthHour =
       this.totalHoursWorked +
       this.totalIllnessHours +
       this.totalHoliday +
-      this.totalDayOff;
-    this.viewTotal = this.totalMonthHour > 0; // Imposta viewTotal a true se ci sono ore totali maggiori di zero
+      this.totalDayOff+
+      this.totalExtraWork;
+    this.viewTotal = this.totalMonthHour > 0; // Imposta viewTotal a true se ci sono ore totali maggiori di zero e quindi mostra lo specchietto delle ore totali
   }
 
   // questo metodo permette di ottenere il dto che accetta il backend
@@ -177,7 +186,9 @@ export class CalendarComponent implements OnInit {
           group.get('places')?.value || '',
           group.get('illnessHours')?.value || 0,
           group.get('holiday')?.value || 0,
-          group.get('dayOff')?.value || 0
+          group.get('hoursOff')?.value || 0,
+          group.get('extraWork')?.value || 0
+
         );
         hourWorkedDTOArray.push(dto);
       });
@@ -235,8 +246,10 @@ export class CalendarComponent implements OnInit {
       group.get('places')?.[disabled ? 'disable' : 'enable']();
       group.get('illnessHours')?.[disabled ? 'disable' : 'enable']();
       group.get('holiday')?.[disabled ? 'disable' : 'enable']();
-      group.get('dayOff')?.[disabled ? 'disable' : 'enable']();
+      group.get('hoursOff')?.[disabled ? 'disable' : 'enable']();
       group.get('note')?.[disabled ? 'disable' : 'enable']();
+      group.get('extraWork')?.[disabled ? 'disable' : 'enable']();
+      
     });
   }
 

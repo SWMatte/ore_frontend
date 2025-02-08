@@ -9,3 +9,15 @@ div {
 .custom-month-label {
     font-size: small !important;
  }
+
+ .small-cell {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* Spazio tra le celle */
+  }
+  
+  .small-cell mat-form-field {
+    flex: 1 1 150px; /* Dimensione flessibile con larghezza minima */
+    min-width: 150px; /* Larghezza minima */
+  }
+  

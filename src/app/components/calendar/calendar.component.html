@@ -1,4 +1,4 @@
-<mat-form-field>
+<mat-form-field > 
   <mat-label class="custom-month-label">Scegli il mese da registrare</mat-label>
   <input
     matInput
@@ -10,10 +10,10 @@
   <mat-datepicker #picker></mat-datepicker>
 </mat-form-field>
 
-<ng-container *ngIf="daysOfMonth$ | async as daysOfMonth">
+<ng-container *ngIf="daysOfMonth$ | async as daysOfMonth" >
   <form [formGroup]="homeform" (ngSubmit)="onSubmit()">
     <div formArrayName="days">
-      <div *ngFor="let day of daysOfMonth; let i = index" [formGroupName]="i">
+      <div *ngFor="let day of daysOfMonth; let i = index" [formGroupName]="i" class="small-cell">
         <mat-form-field appearance="fill">
           <mat-label>Giorno</mat-label>
           <input matInput type="text" formControlName="day"   />
@@ -58,7 +58,7 @@
 
         <mat-form-field appearance="fill">
           <mat-label>Ore di permesso</mat-label>
-          <mat-select formControlName="dayOff"  >
+          <mat-select formControlName="hoursOff"  >
             <mat-option value="" disabled selected>Seleziona ore</mat-option>
             <mat-option *ngFor="let hour of hours" [value]="hour"
               >{{ hour }}
@@ -77,6 +77,17 @@
         </mat-form-field>
 
         <mat-form-field appearance="fill">
+          <mat-label>Ore di straordinario</mat-label>
+          <mat-select formControlName="extraWork"  >
+            <mat-option value="" disabled selected>Seleziona ore</mat-option>
+            <mat-option *ngFor="let hour of hours" [value]="hour"
+              >{{ hour }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+
+        <mat-form-field appearance="fill">
           <mat-label>Note</mat-label>
           <input matInput type="text" formControlName="note"   />
         </mat-form-field>
@@ -90,6 +101,7 @@
       <span>Totale ore malattia: {{ totalIllnessHours }}</span>
       <span>Totale ore vacanza: {{ totalHoliday }}</span>
       <span>Totale ore permesso: {{ totalDayOff }}</span>
+      <span>Totale ore sraordinario: {{ totalExtraWork }}</span>
       <div>
         Ore totali mensili: {{ totalMonthHour == 0 ? 0 : totalMonthHour }}
       </div>
